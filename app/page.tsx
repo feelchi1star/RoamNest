@@ -37,7 +37,7 @@ interface IITEM {
 export default function Home() {
   const [openNav, setOpenNav] = React.useState(false);
   const [Mockdata, setMockdata] = React.useState(data);
-  const [loc, setLoc] = React.useState(Mockdata[0].country);
+  const [loc, setLoc] = React.useState(Mockdata[0]?.country || "");
   const [openTop, setOpenTop] = React.useState(false);
 
   return (
@@ -77,6 +77,7 @@ export default function Home() {
             <Typography variant="small">{Mockdata.length}+ Roams</Typography>
           </div>
           <div className="flex sm:px-10 items-center justify-center w-full">
+            {Mockdata.length < 1 && <div className="">No Result Found</div>}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 place-items-start justify-center">
               {Mockdata.map((item: IITEM, idx: number) => {
                 return <BlogCard key={idx} {...item} />;
@@ -142,6 +143,8 @@ function DNav({
         item.type.toLowerCase().includes(searchText)
       );
     });
+
+    console.log(filteredData);
     setMockdata(filteredData);
   }, [data, searchText, setMockdata]);
 
@@ -151,7 +154,6 @@ function DNav({
         <Select
           size="md"
           variant="static"
-          defaultValue={Mockdata[0].country + ", " + Mockdata[0].city}
           label="Select Location"
           selected={(element) =>
             element &&
