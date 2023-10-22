@@ -1,5 +1,5 @@
 "use client";
-import Mockdata from "./src/mockData/products";
+import data from "./src/mockData/products";
 import Image from "next/image";
 import {
   Button,
@@ -16,6 +16,7 @@ import {
   Option,
   Drawer,
   Checkbox,
+  Radio,
 } from "./src/index";
 import React from "react";
 import { RatedIcon, UnratedIcon } from "./src/Icons/Star";
@@ -35,8 +36,10 @@ interface IITEM {
 }
 export default function Home() {
   const [openNav, setOpenNav] = React.useState(false);
+  const [Mockdata, setMockdata] = React.useState(data);
   const [loc, setLoc] = React.useState(Mockdata[0].country);
   const [openTop, setOpenTop] = React.useState(false);
+
   return (
     <ThemeProvider>
       <Head>
@@ -58,59 +61,15 @@ export default function Home() {
                 className="h-auto w-36"
               />
             </Link>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center ">
-                <ButtonGroup onClick={() => setOpenTop(true)}>
-                  <Button className="py-4 bg-stone-50 font-light text-stone-500 px-8">
-                    Finland Otuku
-                  </Button>
-                  <Button className="py-4 bg-stone-50 font-light text-stone-500 px-8">
-                    Guests
-                  </Button>
-                  <Button className="py-4  bg-stone-50 text-stone-500 px-8">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-6 h-6 text-purple-500"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-                      />
-                    </svg>
-                  </Button>
-                </ButtonGroup>
-              </div>
-              {/* <div className="mr-4 hidden lg:block">
-                <Input
-                  type="text"
-                  label="Search for houses"
-                  icon={
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-6 h-6"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-                      />
-                    </svg>
-                  }
-                />
-              </div> */}
+            <div className="lg:flex hidden items-center gap-4">
+              <NavAction setOpenTop={setOpenTop} />
             </div>
           </div>
         </Navbar>
         <div className="mt-10 ">
+          <div className="lg:hidden mb-10 flex justify-center items-center gap-4">
+            <NavAction setOpenTop={setOpenTop} />
+          </div>
           <div className="flex my-5 px-16 items-center justify-between w-full">
             <Typography className="" variant="h4">
               Roam in Finland
@@ -137,64 +96,168 @@ export default function Home() {
           </Link>
         </Typography>
       </footer>
-
-      <Drawer
-        placement="top"
-        overlay={false}
-        open={openTop}
-        onClose={() => setOpenTop(false)}
-        className="p-4 "
-      >
-        <div className="grid lg:grid-cols-3 gap-x-14 lg:pt-4 lg:px-10 place-items-start">
-          <div className="mb-6 w-full flex items-center justify-between">
-            <Select
-              size="md"
-              variant="static"
-              defaultValue={Mockdata[0].country + ", " + Mockdata[0].city}
-              label="Select Location"
-              selected={(element) =>
-                element &&
-                React.cloneElement(element, {
-                  disabled: true,
-                  className:
-                    "flex items-center opacity-100 px-0 gap-2 pointer-events-none",
-                })
-              }
-            >
-              {Mockdata.map((item: IITEM, idx: number) => {
-                return (
-                  <Option
-                    defaultChecked
-                    key={idx}
-                    onClick={() => setOpenTop(false)}
-                    value={"kkk k k"}
-                    className="flex items-center gap-2"
-                  >
-                    {item.country + ", " + item.city}
-                  </Option>
-                );
-              })}
-            </Select>
-          </div>
-
-          <div className="flex gap-2 flex-col ">
-            <Typography variant="h6">Guests</Typography>
-            <div className="flex gap-2 flex-col">
-              <Checkbox label="1 - 3 Beds"></Checkbox>
-              <Checkbox label="4 - 6 Beds"></Checkbox>
-              <Checkbox label="7+ Beds"></Checkbox>
-            </div>
-          </div>
-          <div className="flex w-full">
-            <Input
-              label="Search a property"
-              variant="static"
-              placeholder="Arty interior"
-            ></Input>
-          </div>
+      {openTop && (
+        <div>
+          <Drawer
+            placement={"left"}
+            overlay={false}
+            open={openTop}
+            onClose={() => setOpenTop(false)}
+            className="p-4"
+          >
+            <Typography className="px-4 mb-6" variant="h3">
+              Filter
+            </Typography>
+            <DNav
+              setOpenTop={setOpenTop}
+              data={data}
+              setMockdata={setMockdata}
+              Mockdata={Mockdata}
+            />
+          </Drawer>
         </div>
-      </Drawer>
+      )}
     </ThemeProvider>
+  );
+}
+
+function DNav({
+  Mockdata,
+  setMockdata,
+  data,
+  setOpenTop,
+}: {
+  data: any;
+  setMockdata: any;
+  Mockdata: any;
+  setOpenTop: any;
+}) {
+  const [searchText, setsearchText] = React.useState("");
+  const [selectedValue, setSelectedValue] = React.useState("");
+
+  React.useEffect(() => {
+    const filteredData = data.filter((item: any) => {
+      return (
+        item.title.toLowerCase().includes(searchText) ||
+        item.type.toLowerCase().includes(searchText)
+      );
+    });
+    setMockdata(filteredData);
+  }, [data, searchText, setMockdata]);
+
+  return (
+    <div className="grid  gap-x-14 gap-y-14 lg:pt-4 px-4 place-items-start">
+      <div className=" w-full flex items-center justify-between">
+        <Select
+          size="md"
+          variant="static"
+          defaultValue={Mockdata[0].country + ", " + Mockdata[0].city}
+          label="Select Location"
+          selected={(element) =>
+            element &&
+            React.cloneElement(element, {
+              disabled: true,
+              className:
+                "flex items-center opacity-100 px-0 gap-2 pointer-events-none",
+            })
+          }
+        >
+          {Mockdata.map((item: IITEM, idx: number) => {
+            return (
+              <Option
+                defaultChecked
+                key={idx}
+                onClick={() => setOpenTop(false)}
+                value={"kkk k k"}
+                className="flex items-center gap-2"
+              >
+                {item.country + ", " + item.city}
+              </Option>
+            );
+          })}
+        </Select>
+      </div>
+
+      <div className="flex gap-2 flex-col ">
+        <Typography variant="h6">Guests</Typography>
+        <div className="flex gap-2 flex-col">
+          <Radio
+            onChange={(e) => {
+              setSelectedValue(e.target.value.toLowerCase());
+            }}
+            name="type"
+            value={"1-3"}
+            label="1 - 3 Beds"
+          ></Radio>
+          <Radio
+            onChange={(e) => {
+              setSelectedValue(e.target.value.toLowerCase());
+            }}
+            name="type"
+            value={"4-6"}
+            label="4 - 6 Beds"
+          ></Radio>
+          <Radio
+            onChange={(e) => {
+              setSelectedValue(e.target.value.toLowerCase());
+            }}
+            name="type"
+            value={"7"}
+            label="7+ Beds"
+          ></Radio>
+        </div>
+      </div>
+      <div className="flex w-full">
+        <Input
+          name="search"
+          label="Search a property"
+          variant="static"
+          type="search"
+          value={searchText}
+          onChange={(e) => {
+            setsearchText(e.target.value.toLowerCase());
+          }}
+          placeholder="Arty interior"
+        ></Input>
+      </div>
+
+      <div className="flex items-center justify-center w-full">
+        <Button className="hover:bg-black/50" onClick={() => setMockdata(data)}>
+          Reset
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function NavAction({ setOpenTop }: { setOpenTop: (f: boolean) => void }) {
+  return (
+    <div className="flex items-center ">
+      <ButtonGroup onClick={() => setOpenTop(true)}>
+        <Button className="py-4 bg-stone-50 font-light text-stone-500 px-8">
+          Finland Otuku
+        </Button>
+        <Button className="py-4 bg-stone-50 font-light text-stone-500 px-8">
+          Guests
+        </Button>
+        <Button className="py-4  bg-stone-50 text-stone-500 px-8">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-6 h-6 text-purple-500"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+            />
+          </svg>
+        </Button>
+      </ButtonGroup>
+    </div>
   );
 }
 
