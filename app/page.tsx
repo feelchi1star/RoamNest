@@ -198,7 +198,7 @@ export default function Home() {
   );
 }
 
-export function BlogCard({
+function BlogCard({
   city,
   country,
   superHost,
