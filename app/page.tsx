@@ -70,15 +70,15 @@ export default function Home() {
           <div className="lg:hidden mb-10 flex justify-center items-center gap-4">
             <NavAction setOpenTop={setOpenTop} />
           </div>
-          <div className="flex my-5 px-16 items-center justify-between w-full">
-            <Typography className="" variant="h4">
+          <div className="flex my-5 px-4 lg:px-16 items-center justify-between w-full">
+            <Typography className="text-base lg:text-lg" variant="h4">
               Roam in Finland
             </Typography>
             <Typography variant="small">{Mockdata.length}+ Roams</Typography>
           </div>
           <div className="flex sm:px-10 items-center justify-center w-full">
             {Mockdata.length < 1 && <div className="">No Result Found</div>}
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 place-items-start justify-center">
+            <div className="grid px-4 md:grid-cols-2 lg:grid-cols-3 gap-10 place-items-start justify-center">
               {Mockdata.map((item: IITEM, idx: number) => {
                 return <BlogCard key={idx} {...item} />;
               })}
@@ -291,11 +291,13 @@ function BlogCard({
         />
       </CardHeader>
       <CardBody className="py-3 px-1">
-        <div className="flex mt-2 items-center justify-between gap-0">
-          <Button variant="outlined" className="py-1 px-2">
-            Super Host
+        <div className="flex mt-2 items-center justify-between gap-3 lg:gap-0">
+          <Button variant="outlined" className="p-1 lg:py-1 lg:px-2">
+            <span className="text-xs">Super Host</span>
           </Button>
-          <Typography variant="small">{type}</Typography>
+          <Typography variant="small" className="text-xs">
+            {type}
+          </Typography>
           {beds && <Typography variant="small">.{beds} beds</Typography>}
           <Rating
             ratedColor="deep-purple"
